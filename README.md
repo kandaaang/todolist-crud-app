@@ -1,2 +1,3 @@
 # todolist-crud-app
-dasfdsa
+
+Learning some MongoDB with a CRUD To-Do List App
