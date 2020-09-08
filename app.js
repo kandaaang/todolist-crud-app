@@ -11,7 +11,7 @@ const collection = "todoList";
 
 app.get('/', (req,res) => {
 
-    res.sendFile(paht.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'index.html'));
     
 })
 
@@ -23,8 +23,8 @@ app.get('/getTodos', (req,res) => {
             console.log(documents);
             res.json(documents);
         }
-    })
-})
+    });
+});
 
 
 app.put('/:id', (req,res) => {
@@ -39,8 +39,8 @@ app.put('/:id', (req,res) => {
             } else {
                 res.json(result);
             }
-        })
-})
+        });
+});
 
 app.post('/', (req,res) => {
     const userInput = req.body;
@@ -51,9 +51,9 @@ app.post('/', (req,res) => {
         } else {
             res.json({result  : result, document : result.ops[0]});
         }
-    })
+    });
 
-})
+});
 
 app.delete('/:id', (req,res) => {
     const todoID = req.params.id;
@@ -64,8 +64,8 @@ app.delete('/:id', (req,res) => {
         } else {
             res.json(result);
         }
-    })
-})
+    });
+});
 
 db.connect((err) => {
     if(err) {
@@ -76,4 +76,4 @@ db.connect((err) => {
             console.log('Connected to database successfully, listening on port:3000')
         });
     }
-})
+});
