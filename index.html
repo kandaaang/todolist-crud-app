@@ -34,6 +34,17 @@
             </div>
             <div class = "col-lg-2"></div>
         </div>
+        <br>
+        <div class = "row">
+            <div class = "col-lg-2"></div>
+            <div class = "col-lg-8">
+                <div class="alert" role="alert" id = "message">
+                    
+                </div>
+            </div>
+            <div class = "col-lg-2"></div>
+        </div>
+
     </div>
 
     <!-- Optional JavaScript -->
@@ -46,6 +57,22 @@
             const display = $("#display");
             const form = $("#form");
             const todoUserInput = $("#todoUserInput");
+            const message = $("#message")
+            message.hide();
+
+            const displayMessage = (flag,msg) => {
+                if(flag) {
+                    message.removeClass('alert-danger');
+                    message.addClass('alert-success');
+                    message.html(msg);
+                    message.show();
+                } else {
+                    message.removeClass('alert-success');
+                    message.addClass('alert-danger');
+                    message.html(msg);
+                    message.show();
+                }
+            }
 
 
             const getTodos = () => {
@@ -64,7 +91,26 @@
             }
 
             const editTodo = (todo,todoID,editID) => {
-                let editBtn = $(`${editID}`);
+                let editBtn = $(`#${editID}`);
+                editBtn.click(() => {
+                    fetch(`/${todo._id}`, {
+                        method : "put",
+                        headers : {
+                            "Content-Type" : "application/json; charset=utf-8"
+                        },
+                        body : JSON.stringify({ todo : todoUserInput.val()})
+                    }).then((response) => {
+                        return response.json();
+                    }).then((data) => {
+                        if(data.ok == 1) {
+                            console.log(todoUserInput.val());
+                            console.log(data.value);
+                            let todoIndex = $(`#${todoID}`);
+                            todoIndex.html(data.value.todo);
+                            resetTodosInput;
+                        }
+                    });
+                });
             }
 
             const deleteTodo = (todo, listItemID, deleteID) => {
@@ -108,7 +154,7 @@
                 data.forEach((todo) => {
                     let ids = buildIDs(todo);
                     display.append(buildTemplate(todo, ids));
-                    // editTodo(todo, ids.todoID,ids.editID);
+                    editTodo(todo, ids.todoID,ids.editID);
                     deleteTodo(todo, ids.listItemID,ids.deleteID);
                 });
             }
@@ -125,12 +171,19 @@
                 }).then((response)=> {
                     return response.json();
                 }).then((data) => {
-                    if(data.result.ok == 1 && data.result.n == 1) {
+                    if(!data.error) {
+                        if(data.result.ok == 1 && data.result.n == 1) {
                         let ids = buildIDs(data.document);
                         display.append(buildTemplate(data.document,ids));
-                        // editTodo(data.document,ids.todoID,ids.editID);
+                        editTodo(data.document,ids.todoID,ids.editID);
                         deleteTodo(data.document, ids.listItemID,ids.deleteID);
+                        displayMessage(true,data.msg);
+                        }
+                    } 
+                    else {
+                        displayMessage(false,data.error.message);
                     }
+                    
                     resetTodosInput();
                 });
             })
